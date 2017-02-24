@@ -6,6 +6,9 @@ class Arreglo {
 	
 	public:
 		Arreglo(int);
+		int busquedaSecuencial(int);
+		int busquedaBinariaI(int);
+		int buscarBinarioR(int,int,int);
 		void mostrar();
 		void cargar();
 		int burbuja();
@@ -19,14 +22,70 @@ Arreglo::Arreglo(int tamanio){
 	elemento=new int[tamanio];
 }
 void Arreglo::cargar(){	
-int num;
-for (int i=0;i<tamanio;i++){
-
-	cout<<"Ingresa el elemento "<<i+1<<" : ";
-	cin>>num;
-	elemento[i]=num;
+		
+		int num;
+		for (int i=0;i<tamanio;i++){
+			cout<<"Ingresa el elemento "<<i+1<<" : ";
+			cin>>num;
+			elemento[i]=num;
+		}
+		
 }
-}
+int Arreglo::busquedaBinariaI(int numeroBusqueda)
+{
+	int primero = 0;
+    int mitad;
+    int ultimo = tamanio - 1;
+ 	bool validacion;
+    while (primero <= ultimo) {
+        mitad = (primero + ultimo) / 2;
+ 
+        if (numeroBusqueda == elemento[mitad]) {
+            cout << "Se encuentra en la posicion " << mitad + 1 << endl;
+            validacion=true;
+			primero=ultimo+1;//para que se acabe el while
+        } else {
+            if (elemento[mitad] > numeroBusqueda) {
+                ultimo = mitad - 1;
+            } else {
+            	if(elemento[mitad] < numeroBusqueda)
+            	{
+                	primero = mitad + 1;
+                }
+                
+            }
+        }
+        if(primero==ultimo)
+        {
+        	cout<<"No se encontro el dato en el arreglo \n";
+		}
+        
+        
+    }
+    
+    
+	
+ } 
+int Arreglo::busquedaSecuencial(int numeroBusqueda)
+{
+	int i=0,aux=0,operacion=0;
+	do
+	{
+		operacion++;
+		if(elemento[i]==numeroBusqueda)
+		{
+			cout<<"El elemento se encuentra ubicado en la posicion "<<i+1<<" del arreglo \n";
+			aux=1;
+		}
+		i++;
+	}while(aux==0 && i<tamanio);
+	if(aux==0)
+	{
+	cout<<"No se encontro el elemento en el arreglo \n";	
+	}
+	return operacion;
+	
+ } 
 int Arreglo::burbuja(){
 int i, j,aux,op=0;
 for (i=0;i<tamanio-1;i++)
@@ -101,15 +160,46 @@ void Arreglo::operator= (Arreglo A){
 	
 	
 }
+int Arreglo::buscarBinarioR(int izq,int der,int numeroBusqueda) 
+{ 
+		int op=0;
+	//se encuentra la mitad del vector o intervalo 
+	int mitad =(int)((izq+der)/2);
+	//se verifica si el numero no esta en el arreglo
+	op++;
+	if((izq==der && elemento[mitad]!=numeroBusqueda) || elemento[der]<numeroBusqueda || elemento[izq]>numeroBusqueda)
+	{
+		cout<<"No se encuentra el dato en el arreglo \n";
+		return op;
+	}
+	//caso-base de la recursividad -cuando se encuentra el dato buscado en el arreglo
+	op++;
+	if(elemento[mitad] == numeroBusqueda)
+	{
+		cout<<"El dato se encuentra en la posicion "<<mitad<<"\n";
+		return op;
+	}
+	else
+	{
+		//verifica si el dato esta a la izquierda
+		if(elemento[mitad]>numeroBusqueda)
+		{
+			return buscarBinarioR( izq , mitad-1 , numeroBusqueda);
+		}else{
+			return buscarBinarioR( mitad+1 , der ,numeroBusqueda);
+		}
+	}
+	
+} 
 
 int main (){
-	int n;
+	int n,validacionArreglo=0,numeroBuscado;
 	char opcion,opcionBuscar,opcionOrdenar;
 	 
 	cout<<"--Bienvenido"<<"\n";
 	cout <<"De que tamanio es el arreglo?\n";
 	cin>>n;	
-	Arreglo A(n),B(n);
+	Arreglo A(n),B(n),copia(n);
 	do{
 	
 	
@@ -126,33 +216,57 @@ switch(opcion)
 case 'C':
 	A.cargar();
 	B=A;
+	validacionArreglo=1;
 	break;
 case 'M':
+	if(validacionArreglo!=0)
 	B.mostrar();
+	else
+	cout<<"POR FAVOR CARGUE PRIMERO EL ARREGLO\n";
 	break;
 case 'B':
-	do{
+	if(validacionArreglo!=0)
+	{
 	
-	cout<<"\t\t\tComo desea buscar el dato ? \n\n";
-    cout<<"(S)ecuencial\n";
-    cout<<"Binario (I)terativo\n";
-    cout<<"(B)inario Recursivo\n";
-    cout<<"(R)egresar\n";
-    cin>>opcionBuscar;
-    switch(opcionBuscar)
-    {
-    	case 'S':
-    		break;
-    	case 'I':
-    		break;
-    	case 'B':
-    		break;
-    	case 'R':
-    		break;
-    	default: cout<<"El valor ingresado no esta en el menu"<<endl;
+		do{
+		
+		cout<<"\t\t\tComo desea buscar el dato ? \n\n";
+	    cout<<"(S)ecuencial\n";
+	    cout<<"Binario (I)terativo\n";
+	    cout<<"(B)inario Recursivo\n";
+	    cout<<"(R)egresar\n";
+	    cin>>opcionBuscar;
+	    switch(opcionBuscar)
+	    {
+	    	case 'S':
+	    		cout<<"POR FAVOR INGRESE EL DATO A BUSCAR EN EL ARREGLO: \n";
+				cin>>numeroBuscado;
+				cout<<"En la Busqueda Secuencial se realizaron "<<B.busquedaSecuencial(numeroBuscado)<<" operaciones fundamentales \n";
+	    		break;
+	    	case 'I':
+	    		copia=B;
+	    		copia.burbuja();
+	    		cout<<"POR FAVOR INGRESE EL DATO A BUSCAR EN EL ARREGLO: \n";
+				cin>>numeroBuscado;
+				cout<<"En la Busqueda Binaria se realizaron "<<copia.busquedaBinariaI(numeroBuscado)<<" operaciones fundamentales \n";
+	    		break;
+	    	case 'B':
+	    		copia=B;
+	    		copia.burbuja();
+	    		cout<<"POR FAVOR INGRESE EL DATO A BUSCAR EN EL ARREGLO: \n";
+				cin>>numeroBuscado;
+				cout<<"En la Busqueda Binaria se realizaron "<<copia.buscarBinarioR(0,n,numeroBuscado)<<" operaciones fundamentales \n";
+	    		break;
+	    	case 'R':
+	    		break;
+	    	default: cout<<"El valor ingresado no esta en el menu"<<endl;
+		}
+	    
+		}while(opcionBuscar!='R');
 	}
-    
-	}while(opcionBuscar!='R');
+	else
+	cout<<"POR FAVOR CARGUE PRIMERO EL ARREGLO"<<"\n";
+
 		break;
 	case 'O':
 		do{
@@ -192,19 +306,10 @@ default: cout<<"El valor ingresado no esta en el menu"<<endl;
 
 }while (opcion!='T');
 
-}/*
-int operaciones =B.burbuja();
-cout <<"METODO BURBUJA"<<"\n \n";
-B.mostrar();
-cout <<"cantidad de operaciones realizadas en burbuja "<<operaciones<<"\n \n";
-B=A;
-cout <<"METODO INSERCION"<<"\n \n";
-operaciones =B.insercion();
-B.mostrar(); 
-cout <<"cantidad de operaciones realizadas en Insercion "<<operaciones<<"\n \n";
-B=A;
-cout <<"METODO SHELL"<<"\n \n";
-B.shellsortv3();
-B.mostrar();
-cout <<"cantidad de operaciones realizadas en Metodo SHEll "<<operaciones;
-}*/
+}
+				
+	
+	
+	//op=	A.insercion();
+	//A.mostrar();
+	//cout<<"las operaciones realizadas son "<<op;
