@@ -1,5 +1,11 @@
 #include <iostream>
 using namespace std;
+class Cubeta
+{
+	int tamanio;
+	int *elemento;
+	};
+
 class Arreglo {
 	int tamanio;
 	int *elemento;
@@ -13,7 +19,10 @@ class Arreglo {
 		void cargar();
 		int burbuja();
 		int insercion();
-		void shellsortv3();			
+		int shellsort();	
+		void merge(int*,int*,int,int,int);
+		void mergesort(int *a, int*b, int low, int high);
+		void quicksort(int A[] ,int b,int c);	
 		void operator=(Arreglo);
 };
 
@@ -33,16 +42,17 @@ void Arreglo::cargar(){
 }
 int Arreglo::busquedaBinariaI(int numeroBusqueda)
 {
+	int operacion=0;
 	int primero = 0;
     int mitad;
     int ultimo = tamanio - 1;
- 	bool validacion;
+ 	
     while (primero <= ultimo) {
         mitad = (primero + ultimo) / 2;
- 
+		operacion++;
         if (numeroBusqueda == elemento[mitad]) {
             cout << "Se encuentra en la posicion " << mitad + 1 << endl;
-            validacion=true;
+            
 			primero=ultimo+1;//para que se acabe el while
         } else {
             if (elemento[mitad] > numeroBusqueda) {
@@ -64,7 +74,7 @@ int Arreglo::busquedaBinariaI(int numeroBusqueda)
     }
     
     
-	
+	return operacion;
  } 
 int Arreglo::busquedaSecuencial(int numeroBusqueda)
 {
@@ -101,6 +111,7 @@ for (i=0;i<tamanio-1;i++)
 }
 
 
+
 int Arreglo::insercion(){
 	int aux,a,op=0;
 	for (int k=1;k<tamanio;k++){
@@ -119,14 +130,14 @@ int Arreglo::insercion(){
 return op;
 }
 
-void Arreglo::shellsortv3()
+int Arreglo::shellsort()
 {
-	int j,tamano;
+	int j;
 	int op=0;
-	for (int gap = tamano / 2; gap > 0; gap /= 2)
+	for (int gap = tamanio / 2; gap > 0; gap /= 2)
 	{
 		cout << "divisor : " << gap << endl;
-		for (int i = gap; i < tamano; ++i)
+		for (int i = gap; i < tamanio; ++i)
 		{
 			int temp = elemento[i];
 			op++;
@@ -134,13 +145,93 @@ void Arreglo::shellsortv3()
 			{
 				cout << endl << "Cambiar elemento " << elemento[j - gap] << " por " << elemento[j] << endl;
 				elemento[j] = elemento[j - gap];
-				mostrar();
 			}
 			elemento[j] = temp;
+			op++;
 		}
 	}
+	return op;
 }
-
+void Arreglo::merge(int *a, int *b, int low, int pivot, int high)
+{
+    int h,i,j,k;
+    h=low;
+    i=low;
+    j=pivot+1;
+ 
+    while((h<=pivot)&&(j<=high))
+    {
+        if(a[h]<=a[j])
+        {
+            b[i]=a[h];
+            h++;
+        }
+        else
+        {
+            b[i]=a[j];
+            j++;
+        }
+        i++;
+    }
+    if(h>pivot)
+    {
+        for(k=j; k<=high; k++)
+        {
+            b[i]=a[k];
+            i++;
+        }
+    }
+    else
+    {
+        for(k=h; k<=pivot; k++)
+        {
+            b[i]=a[k];
+            i++;
+        }
+    }
+    for(k=low; k<=high; k++) a[k]=b[k];
+}
+void Arreglo::mergesort(int *a, int*b, int low, int high)
+{
+    int pivot;
+    if(low<high)
+    {
+        pivot=(low+high)/2;
+        mergesort(a,b,low,pivot);
+        mergesort(a,b,pivot+1,high);
+        merge(a,b,low,pivot,high);
+    }
+}
+void Arreglo::quicksort(int A[],int izq, int der )
+{ 
+int i, j, x , aux; 
+i = izq; 
+j = der; 
+x = A[(izq + der) /2]; 
+    do{ 
+        while( (A[i] < x) && (j <= der) )
+        { 
+            i++;
+        } 
+ 
+        while( (x < A[j]) && (j > izq) )
+        { 
+            j--;
+        } 
+ 
+        if( i <= j )
+        { 
+            aux = A[i]; A[i] = A[j]; A[j] = aux; 
+            i++;  j--; 
+        }
+         
+    }while( i <= j ); 
+ 
+    if( izq < j ) 
+        quicksort( A, izq, j ); 
+    if( i < der ) 
+        quicksort( A, i, der ); 
+}
 
 
 void Arreglo::mostrar(){
@@ -283,17 +374,43 @@ case 'B':
 	    switch(opcionOrdenar)
 	    {
 	    	case 'B':
-	    		break;
-	    	case 'I':
-	    		break;
-	    	case 'S':
-	    		break;
-	    	case '1':
-	    		break;
-	    	case 'M':
-	    		break;
-			case 'C':
-	    		break;	
+			int operaciones =B.burbuja();
+			cout <<"METODO BURBUJA"<<"\n \n";
+			B.mostrar();
+			cout <<"cantidad de operaciones realizadas en burbuja "<<operaciones<<"\n \n";
+			B=A;
+			break;
+			
+			case 'I':
+			cout <<"METODO INSERCION"<<"\n \n";
+			int operaciones =B.insercion();
+			B.mostrar(); 
+			cout <<"cantidad de operaciones realizadas en Insercion "<<operaciones<<"\n \n";
+			B=A;
+			break;
+			
+			case 'S':
+			cout <<"METODO SHELL"<<"\n \n";
+			int operaciones =B.shellsort();
+			B.mostrar();
+			cout <<"cantidad de operaciones realizadas en Shell "<<operaciones<<"\n \n";
+			B=A;	
+			break;
+
+			case 'Q':
+			cout <<"METODO QUICK SORT"<<"\n \n";
+			//quicksort(B,0,n-1);
+			B=A;	
+			break;
+
+			case 'M':
+			cout <<"METODO MERGE SORT"<<"\n \n";
+			int num;
+			num = sizeof(A)/sizeof(int);
+			cout<<num;
+			B=A;	
+			break;
+	    	
 	    	default: cout<<"El valor ingresado no esta en el menu"<<endl;
 		}
 	    
@@ -307,9 +424,3 @@ default: cout<<"El valor ingresado no esta en el menu"<<endl;
 }while (opcion!='T');
 
 }
-				
-	
-	
-	//op=	A.insercion();
-	//A.mostrar();
-	//cout<<"las operaciones realizadas son "<<op;
